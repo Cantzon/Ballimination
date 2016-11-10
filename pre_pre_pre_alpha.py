@@ -41,7 +41,8 @@ FPS=30
 fpsClock=pygame.time.Clock()
 
 DISPLAYSURF=pygame.display.set_mode((577,472),0,32)
-pygame.display.set_caption('Animation')
+pygame.display.set_caption('Animation')
+
 
 WHITE = (255, 255, 255)
 background=pygame.image.load("background.png")

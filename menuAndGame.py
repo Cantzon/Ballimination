@@ -30,7 +30,7 @@ class Player():
         self.rect.x = xpos
         self.rect.y = ypos
         self.surface=surf
-        self.dist=10
+        self.dist=5
         self.frame=0
         self.lastState='right'
         
@@ -66,7 +66,7 @@ class Bullet():
         self.rect = self.image.get_rect()
         self.rect.x = xpos
         self.rect.y = ypos
-        self.dist = 10
+        self.dist = 5
         self.surface = surf
         self.dead = False
 
@@ -91,7 +91,7 @@ def main(root):
 
     pygame.init()
 
-    FPS=30
+    FPS=60
     WHITE = (255, 255, 255)
 
     fpsClock=pygame.time.Clock()

@@ -14,7 +14,7 @@ delta = {
     pygame.K_DOWN: (0, +5),  
     }
 
-gravity = +1
+gravity = 0.25
 fpsClock=pygame.time.Clock()
 
 
@@ -46,7 +46,7 @@ class Main(object):
         self.setup()
     def setup(self):
         pygame.init()
-        size = (self.width, self.height) = (640,360)
+        size = (self.width, self.height) = (577,472)
         self.screen = pygame.display.set_mode(size, 0, 32)
         self.ball = Ball()
         self.setup_background()

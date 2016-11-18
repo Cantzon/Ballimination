@@ -1,2 +1,12 @@
 BULLET CAN BE SHOT ON PAUSE SCREEN
-COLLISION DETECTION SUCKS
+
+COLLISION DETECTION SUCKS: i want the ball to pop only when the TOP of the bullet rect hits the ball (same for player and ball)
+
+NEED TO FIND A WAY TO MAKE NUMBER(written below) SPECIFIC BALLS, ie how to make the class change the colour and dimensions
+of the ball based on its number
+
+IDEAS
+for ball class create a number knowing which ball it is (this number could belong to the class)
+once a ball is destroyed add two more ball objects with a decremented version of that number
+once the number has reached the lowest possible value, the level is over
+

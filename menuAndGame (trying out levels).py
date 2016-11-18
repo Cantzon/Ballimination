@@ -116,6 +116,7 @@ def clip(val, minval, maxval):
 #Function to quit menu on the click of the Quit Button
 def quitMenu(root):
     root.destroy()
+
     
 #Game window
 def main(root):
@@ -124,7 +125,7 @@ def main(root):
 
     #initalising pygame
     pygame.init()
-
+    
     #declaring constants
     FPS=60
     WHITE = (255, 255, 255)

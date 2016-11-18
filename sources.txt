@@ -1,3 +1,5 @@
 buttons from Da Button Factory (www.dabuttonfactory.com)
 player sprite: http://www.gameart2d.com/temple-run---free-sprites.html
 title : https://cooltext.com/
+balls: http://answers.unity3d.com/storage/temp/18210-ball.png
+ball physics adapted from : #http://stackoverflow.com/questions/16551009/gravity-in-pygame

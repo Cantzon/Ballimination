@@ -12,10 +12,10 @@ delta = {
 class Ball(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self) 
-        self.image = pygame.image.load("cat.png")
+        self.image = pygame.image.load("ball1.png")
         self.rect = self.image.get_rect()
         self.rect.x=0
-        self.rect.y=150
+        self.rect.y=250
         self.speed = [2, 0]
         area = pygame.display.get_surface().get_rect()
         self.width, self.height = area.width, area.height

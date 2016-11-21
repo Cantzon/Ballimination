@@ -71,7 +71,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = xpos
         self.rect.y = ypos
-        self.dist = 5
+        self.dist = 15
         self.surface = surf
         self.dead = False
 
@@ -87,13 +87,14 @@ class Bullet(pygame.sprite.Sprite):
 
 #class for the ball
 class Ball(pygame.sprite.Sprite):
-    def __init__(self,pic):
-        pygame.sprite.Sprite.__init__(self) 
-        self.image = pygame.image.load(pic)
+    def __init__(self,number,xpos,ypos,orientation):
+        pygame.sprite.Sprite.__init__(self)
+        self.num=number
+        self.image = pygame.image.load("images/ball"+str(self.num)+".png")
         self.rect = self.image.get_rect()
-        self.rect.x=0
-        self.rect.y=250
-        self.speed = [2, 0]
+        self.rect.x=xpos
+        self.rect.y=ypos
+        self.speed = [orientation, 0]
         area = pygame.display.get_surface().get_rect()
         self.width, self.height = area.width, area.height-35
         self.dead=False
@@ -116,7 +117,6 @@ def clip(val, minval, maxval):
 #Function to quit menu on the click of the Quit Button
 def quitMenu(root):
     root.destroy()
-
     
 #Game window
 def main(root):
@@ -134,7 +134,11 @@ def main(root):
     RUNNING=0
     PAUSE=1
     GAMEOVER=2
+    isPause=False
     gravity=0.25
+    RIGHT=2.5
+    LEFT=-2.5
+    level=1
 
     #default state
     state=RUNNING
@@ -152,7 +156,7 @@ def main(root):
     player=Player(DISPLAYSURF,250,360)
     bullets=[]
     balls=[]
-    ball = Ball("images/ball1.png")
+    ball = Ball(1,0,200,RIGHT)
     balls.append(ball)
     
     #main game loop
@@ -164,15 +168,19 @@ def main(root):
                 sys.exit()
             #shoots a bullet when you press the spacebar
             elif event.type==pygame.KEYDOWN and event.key==pygame.K_SPACE:
-                bullet=Bullet(DISPLAYSURF,player.rect.x+25,player.rect.y)
-                bullets.append(bullet)
+                if isPause!=True:
+                    bullet=Bullet(DISPLAYSURF,player.rect.x+25,player.rect.y)
+                    bullets.append(bullet)
             #pause event
             elif event.type==pygame.KEYDOWN:
                 if event.key==pygame.K_p:
                     if state==PAUSE:
                         state=RUNNING
-                    else: 
-                        state=PAUSE
+                        isPause=False
+                    else:
+                        if state!=GAMEOVER:
+                            state=PAUSE
+                            isPause=True
                         
         if state==RUNNING:                
             #handles movement of player       
@@ -208,6 +216,11 @@ def main(root):
                 for i in bullets:
                     if pygame.sprite.collide_rect(ball,i):
                         ball.dead=True
+                        bullets.remove(i)
+                        if ball.num>1:
+                            balls.append(Ball(ball.num-1,i.rect.x-10,i.rect.y-50,LEFT))
+                            balls.append(Ball(ball.num-1,i.rect.x+10,i.rect.y-50,RIGHT))
+
                 
         elif state==PAUSE:
             DISPLAYSURF.blit(pause_text,(250,220))
@@ -216,7 +229,13 @@ def main(root):
             DISPLAYSURF.blit(gameOver_text,(220,220))
             
         pygame.display.update()
-        fpsClock.tick(FPS)        
+        fpsClock.tick(FPS)
+
+        if balls==[] and ball.num<4:
+            player.rect.x=250
+            balls.append(Ball(level+1,0,200,RIGHT))
+            level+=1
+            
     
 #creating menu window
 root=Tkinter.Tk()

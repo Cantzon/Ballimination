@@ -156,11 +156,11 @@ def main(root):
     player=Player(DISPLAYSURF,250,360)
     bullets=[]
     balls=[]
-    ball = Ball(1,0,200,RIGHT)
+    ball = Ball(1,0,250,RIGHT)
     balls.append(ball)
     
     #main game loop
-    while True:        
+    while True and state!=GAMEOVER:        
         for event in pygame.event.get():
             #quit event
             if event.type==QUIT:
@@ -169,8 +169,9 @@ def main(root):
             #shoots a bullet when you press the spacebar
             elif event.type==pygame.KEYDOWN and event.key==pygame.K_SPACE:
                 if isPause!=True:
-                    bullet=Bullet(DISPLAYSURF,player.rect.x+25,player.rect.y)
-                    bullets.append(bullet)
+                    if bullets==[]:
+                        bullet=Bullet(DISPLAYSURF,player.rect.x+25,player.rect.y)
+                        bullets.append(bullet)
             #pause event
             elif event.type==pygame.KEYDOWN:
                 if event.key==pygame.K_p:
@@ -213,6 +214,7 @@ def main(root):
             for ball in balls:  
                 if pygame.sprite.collide_rect(player,ball):
                     state=GAMEOVER
+                    
                 for i in bullets:
                     if pygame.sprite.collide_rect(ball,i):
                         ball.dead=True
@@ -225,43 +227,50 @@ def main(root):
         elif state==PAUSE:
             DISPLAYSURF.blit(pause_text,(250,220))
             
-        elif state==GAMEOVER:
-            DISPLAYSURF.blit(gameOver_text,(220,220))
-            
         pygame.display.update()
         fpsClock.tick(FPS)
+
+        if state==GAMEOVER:
+            DISPLAYSURF.blit(gameOver_text,(220,220))
+            pygame.display.update()
+            pygame.time.delay(4000)
+            pygame.quit()
+            mainMenu()
 
         if balls==[] and ball.num<4:
             player.rect.x=250
             balls.append(Ball(level+1,0,200,RIGHT))
             level+=1
             
+def mainMenu(gameOver=False):
+        
+    #creating menu window
+    root=Tkinter.Tk()
+    root.geometry("577x472")
+    root.resizable(0,0)
     
-#creating menu window
-root=Tkinter.Tk()
-root.geometry("577x472")
-root.resizable(0,0)
+    #creating background
+    menuBGPhoto=ImageTk.PhotoImage(Image.open("images/background.png"))
+    BGLabel=Tkinter.Label(root,image=menuBGPhoto)
+    BGLabel.place(x=0,y=0,relwidth=1,relheight=1)
 
-#creating background
-menuBGPhoto=ImageTk.PhotoImage(Image.open("images/background.png"))
-BGLabel=Tkinter.Label(root,image=menuBGPhoto)
-BGLabel.place(x=0,y=0,relwidth=1,relheight=1)
+    #creating title label
+    titlePhoto=ImageTk.PhotoImage(Image.open("images/title.png"))
+    title=Tkinter.Label(root,image=titlePhoto)
 
-#creating title label
-titlePhoto=ImageTk.PhotoImage(Image.open("images/title.png"))
-title=Tkinter.Label(root,image=titlePhoto)
+    #creating buttons
+    playBtnPhoto=ImageTk.PhotoImage(Image.open("images/playbutton.png"))
+    quitBtnPhoto=ImageTk.PhotoImage(Image.open("images/quitbutton.png"))
+    playBtn=Tkinter.Button(root,image=playBtnPhoto,command=lambda x=root:main(x))
+    quitBtn=Tkinter.Button(root,image=quitBtnPhoto,command=lambda x=root:quitMenu(x))
 
-#creating buttons
-playBtnPhoto=ImageTk.PhotoImage(Image.open("images/playbutton.png"))
-quitBtnPhoto=ImageTk.PhotoImage(Image.open("images/quitbutton.png"))
-playBtn=Tkinter.Button(root,image=playBtnPhoto,command=lambda x=root:main(x))
-quitBtn=Tkinter.Button(root,image=quitBtnPhoto,command=lambda x=root:quitMenu(x))
+    #packing everything
+    title.pack(pady=50)
+    playBtn.pack(pady=10)
+    quitBtn.pack()
 
-#packing everything
-title.pack(pady=50)
-playBtn.pack(pady=10)
-quitBtn.pack()
+    #main loop
+    root.mainloop()
 
-#main loop
-root.mainloop()
+mainMenu()
 

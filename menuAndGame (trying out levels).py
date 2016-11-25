@@ -7,14 +7,17 @@
 #    Modification History:
 #    Start              End
 #    7/11/16 9:30pm    7/11/16 10:30pm
-#    8/11/16 2:00pm    8/11/16 6:00pm
+#    8/11/16 2:30pm    8/11/16 6:00pm
 #    9/11/16 8:00pm    9/11/16 10:00pm
-#    10/11/16 3:00am   10/11/16 6:00am
+#    10/11/16 3:00am   10/11/16 6:30am
 #    11/11/16 1:00pm   11/11/16 5:00pm
-#    11/11/16 8:00pm   11/11/16 11:00pm
-#    13/11/16 6:00pm   13/11/16 8:00pm
+#    11/11/16 8:30pm   11/11/16 11:30pm
+#    13/11/16 6:00pm   13/11/16 8:30pm
 #    16/11/16 3:00am   16/11/16 6:00am
 #    18/11/16 8:00pm   18/11/16 10:00pm
+#    20/11/16 4:30pm   18/11/16 6:30pm
+#    21/11/16 2:00pm    8/11/16 6:00pm
+#    23/11/16 1:00am   10/11/16 4:00am
 
 #importing needed libraries
 import pygame
@@ -22,21 +25,25 @@ from pygame.locals import *
 import Tkinter
 import sys
 from PIL import ImageTk, Image
+from copy import *
 
 #Class for the Player
 class Player(pygame.sprite.Sprite):
-    def __init__(self,surf,xpos,ypos):
+    def __init__(self,surf,xpos,ypos,whichPlayer):
         pygame.sprite.Sprite.__init__(self)         
         self.idle=pygame.image.load("images/Idle__000.png").convert_alpha()
+        self.heart=pygame.image.load("images/heart.png").convert_alpha()
         self.runAnims=[pygame.image.load("images/Run__00"+str(i)+".png").convert_alpha() for i in range(10)]
         self.image=self.idle
         self.rect = self.image.get_rect()
         self.rect.x = xpos
         self.rect.y = ypos
         self.surface=surf
+        self.playerNum=whichPlayer
         self.dist=5
         self.frame=0
         self.lastState='right'
+        self.lives=3
         
     def keys(self):
         key=pygame.key.get_pressed()
@@ -62,6 +69,12 @@ class Player(pygame.sprite.Sprite):
                 
     def draw(self,surface):
         self.surface.blit(self.image, self.rect)
+        if self.playerNum==1:
+            for i in range(self.lives):
+                self.surface.blit(self.heart,((i*25),0))
+        else:
+            for i in range(self.lives):
+                self.surface.blit(self.heart,((i*25)+500,0))
 
 #Class for the bullet which inherits the Player Class
 class Bullet(pygame.sprite.Sprite):
@@ -94,6 +107,8 @@ class Ball(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x=xpos
         self.rect.y=ypos
+        self.origX=xpos
+        self.origY=ypos
         self.speed = [orientation, 0]
         area = pygame.display.get_surface().get_rect()
         self.width, self.height = area.width, area.height-35
@@ -117,6 +132,13 @@ def clip(val, minval, maxval):
 #Function to quit menu on the click of the Quit Button
 def quitMenu(root):
     root.destroy()
+
+def gameOver(surface,text):
+    surface.blit(text,(220,220))
+    pygame.display.update()
+    pygame.time.delay(2000)
+    pygame.quit()
+    mainMenu()
     
 #Game window
 def main(root):
@@ -139,7 +161,9 @@ def main(root):
     RIGHT=2.5
     LEFT=-2.5
     level=1
-
+    level_text= pygame.font.SysFont('Consolas', 32).render('LEVEL 1', True, pygame.color.Color('White'))
+    gotHit=False
+    
     #default state
     state=RUNNING
 
@@ -152,15 +176,27 @@ def main(root):
     background=pygame.image.load("images/background.png")
     DISPLAYSURF.fill(WHITE)
 
+    #levels
+    levels={1:[[Ball(1,0,250,RIGHT)],0],2:[[Ball(1,0,250,RIGHT),Ball(1,577,250,LEFT)],0],3:[[Ball(2,0,250,RIGHT)],0],4:[[Ball(3,0,250,RIGHT)],0],5:[[Ball(4,0,250,RIGHT)],0]}
+    levels1={1:[[Ball(1,0,250,RIGHT)],0],2:[[Ball(1,0,250,RIGHT),Ball(1,577,250,LEFT)],0],3:[[Ball(2,0,250,RIGHT)],0],4:[[Ball(3,0,250,RIGHT)],0],5:[[Ball(4,0,250,RIGHT)],0]}
+    levels2={1:[[Ball(1,0,250,RIGHT)],0],2:[[Ball(1,0,250,RIGHT),Ball(1,577,250,LEFT)],0],3:[[Ball(2,0,250,RIGHT)],0],4:[[Ball(3,0,250,RIGHT)],0],5:[[Ball(4,0,250,RIGHT)],0]}
+  
     #creating the required objects
-    player=Player(DISPLAYSURF,250,360)
+    player=Player(DISPLAYSURF,250,360,1)
     bullets=[]
-    balls=[]
-    ball = Ball(1,0,250,RIGHT)
-    balls.append(ball)
+    balls=levels[1][0]
+    deadBalls=levels1[1][0]
+    deadBalls1=levels2[1][0]
+
+    level_text = pygame.font.SysFont('Consolas', 32).render('LEVEL '+str(level), True, pygame.color.Color('White'))
+    DISPLAYSURF.blit(background,(0,0))
+    player.draw(DISPLAYSURF)
+    DISPLAYSURF.blit(level_text,(220,220))
+    pygame.display.update()
+    pygame.time.delay(2000)
     
     #main game loop
-    while True and state!=GAMEOVER:        
+    while True and player.lives!=0:        
         for event in pygame.event.get():
             #quit event
             if event.type==QUIT:
@@ -179,29 +215,62 @@ def main(root):
                         state=RUNNING
                         isPause=False
                     else:
-                        if state!=GAMEOVER:
-                            state=PAUSE
-                            isPause=True
+                        state=PAUSE
+                        isPause=True
                         
         if state==RUNNING:                
             #handles movement of player       
             player.keys()
 
-            #updates every single bullet on screen
+            #updates every single bullet on screen and removes dead bullets
             for i in bullets:
                 i.update()
-
-            #removes out-of-screen bullets from the list of bullets
-            for i in bullets:
                 if i.dead==True:
                     bullets.remove(i)
 
+            #updates every bullet on screen and removes dead balls
             for i in balls:
                 i.speed[1] += gravity
                 i.update()
                 if i.dead==True:
                     balls.remove(i)
-            
+
+            #collision b/w player and ball
+            for ball in balls:  
+                if pygame.sprite.collide_rect(player,ball):
+                    player.lives-=1
+                    if player.lives!=0:
+                        player.rect.x=250
+                        level_text = pygame.font.SysFont('Consolas', 32).render('LEVEL '+str(level), True, pygame.color.Color('White'))
+                        DISPLAYSURF.blit(level_text,(220,220))
+                        pygame.display.update()
+                        pygame.time.delay(2000)
+                        if levels1[level][1]!=1:
+                            balls=deadBalls
+                            for j in balls:
+                                j.rect.x=j.origX
+                                j.rect.y=j.origY
+                                j.speed[1]=0
+                            levels1[level][1]=1
+                        elif levels2[level][1]!=1:
+                            balls=deadBalls1
+                            for j in balls:
+                                j.rect.x=j.origX
+                                j.rect.y=j.origY
+                                j.speed[1]=0
+                            levels2[level][1]=1
+
+                    
+                for i in bullets:
+                    if pygame.sprite.collide_rect(ball,i):
+                        ball.dead=True
+                        deadBalls.append(ball)
+                        bullets.remove(i)
+                        if ball.num>1:
+                            balls.append(Ball(ball.num-1,i.rect.x-10,i.rect.y-50,LEFT))
+                            balls.append(Ball(ball.num-1,i.rect.x+10,i.rect.y-50,RIGHT))
+
+                
             #drawing surface, player, ball and bullets
             DISPLAYSURF.blit(background,(0,0))
             player.draw(DISPLAYSURF)
@@ -210,39 +279,42 @@ def main(root):
             for i in bullets:
                 i.draw()
 
-            #collision b/w player and ball
-            for ball in balls:  
-                if pygame.sprite.collide_rect(player,ball):
-                    state=GAMEOVER
-                    
-                for i in bullets:
-                    if pygame.sprite.collide_rect(ball,i):
-                        ball.dead=True
-                        bullets.remove(i)
-                        if ball.num>1:
-                            balls.append(Ball(ball.num-1,i.rect.x-10,i.rect.y-50,LEFT))
-                            balls.append(Ball(ball.num-1,i.rect.x+10,i.rect.y-50,RIGHT))
-
-                
+        #pause screen        
         elif state==PAUSE:
             DISPLAYSURF.blit(pause_text,(250,220))
-            
+
+##        if gotHit==True:
+##            player.lives-=1
+##            player.rect.x=250
+##            level_text = pygame.font.SysFont('Consolas', 32).render('LEVEL '+str(level), True, pygame.color.Color('White'))
+##            DISPLAYSURF.blit(level_text,(220,220))
+##            pygame.display.update()
+##            pygame.time.delay(2000)
+##            balls=levels[level]
+
+        #When level is finished
+        if balls==[]:
+            player.rect.x=250
+            level+=1
+            level_text = pygame.font.SysFont('Consolas', 32).render('LEVEL '+str(level), True, pygame.color.Color('White'))
+            DISPLAYSURF.blit(level_text,(220,220))
+            pygame.display.update()
+            pygame.time.delay(2000)
+            balls=levels[level][0]
+            deadBalls=levels1[level][0]
+            deadBalls1=levels2[level][0]
+        
+        #updating display window    
         pygame.display.update()
         fpsClock.tick(FPS)
 
-        if state==GAMEOVER:
-            DISPLAYSURF.blit(gameOver_text,(220,220))
-            pygame.display.update()
-            pygame.time.delay(4000)
-            pygame.quit()
-            mainMenu()
+        #Game over 
+        if player.lives==0:
+            gameOver(DISPLAYSURF,gameOver_text)
 
-        if balls==[] and ball.num<4:
-            player.rect.x=250
-            balls.append(Ball(level+1,0,200,RIGHT))
-            level+=1
             
-def mainMenu(gameOver=False):
+            
+def mainMenu():
         
     #creating menu window
     root=Tkinter.Tk()

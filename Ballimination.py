@@ -884,6 +884,7 @@ def MPEasy(root,high=-1):
                         if player1.lives==0 and player2.lives==0:
                             high=Score['highscoreME']
                             gameOver(DISPLAYSURF,gameOver_text,highME=high)
+                            gameover=1
                         #if player has lives remaining, restart the level
                         else:
                             player1.rect.x=225
@@ -975,20 +976,21 @@ def MPEasy(root,high=-1):
                     endTime=pygame.time.get_ticks()
                     if endTime-startTime>=5000:
                         player.powerUp=False
-                
-            #drawing surface, player, ball and bullets
-            DISPLAYSURF.blit(background,(0,0))
-            for player in players:
-                player.draw(DISPLAYSURF)
-            for ball in balls:
-                DISPLAYSURF.blit(ball.image, ball.rect)
-            for i in bullets1:
-                i.draw()
-            for i in bullets2:
-                i.draw()
-            if ammo!=[]:
-                for i in ammo:
+                        
+            if gameover!=1:
+                #drawing surface, player, ball and bullets
+                DISPLAYSURF.blit(background,(0,0))
+                for player in players:
+                    player.draw(DISPLAYSURF)
+                for ball in balls:
+                    DISPLAYSURF.blit(ball.image, ball.rect)
+                for i in bullets1:
                     i.draw()
+                for i in bullets2:
+                    i.draw()
+                if ammo!=[]:
+                    for i in ammo:
+                        i.draw()
 
         #pause screen        
         elif state==PAUSE:
@@ -1202,6 +1204,7 @@ def MPHard(root,high=-1):
                         if player1.lives==0 and player2.lives==0:
                             high=Score['highscoreMH']
                             gameOver(DISPLAYSURF,gameOver_text,highMH=high)
+                            gameover=1
                         #if player has lives remaining, restart the level
                         else:
                             player1.rect.x=225
@@ -1293,20 +1296,20 @@ def MPHard(root,high=-1):
                     endTime=pygame.time.get_ticks()
                     if endTime-startTime>=5000:
                         player.powerUp=False
-                
-            #drawing surface, player, ball and bullets
-            DISPLAYSURF.blit(background,(0,0))
-            for player in players:
-                player.draw(DISPLAYSURF)
-            for ball in balls:
-                DISPLAYSURF.blit(ball.image, ball.rect)
-            for i in bullets1:
-                i.draw()
-            for i in bullets2:
-                i.draw()
-            if ammo!=[]:
-                for i in ammo:
+            if gameover!=1:    
+                #drawing surface, player, ball and bullets
+                DISPLAYSURF.blit(background,(0,0))
+                for player in players:
+                    player.draw(DISPLAYSURF)
+                for ball in balls:
+                    DISPLAYSURF.blit(ball.image, ball.rect)
+                for i in bullets1:
                     i.draw()
+                for i in bullets2:
+                    i.draw()
+                if ammo!=[]:
+                    for i in ammo:
+                        i.draw()
 
         #pause screen        
         elif state==PAUSE:

@@ -277,7 +277,6 @@ def SPEasy(root,high=-1):
     if high!=-1:
         Score['highscoreSE']=high
 
-        
     #text for current and high scores
     curScore_text=pygame.font.SysFont('Consolas', 20).render(('Current Score: '+str(curScore)), True, pygame.color.Color('Black'))
     highScore_text=pygame.font.SysFont('Consolas', 20).render(('High Score: '+str(Score['highscoreSE'])), True, pygame.color.Color('Black'))

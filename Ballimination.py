@@ -690,6 +690,8 @@ def SPHard(root,high=-1):
                 mainMenu(highSH1=high)
                 gameover=1
             else:
+                bullets1=[]
+                bullets2=[]
                 ammo=[]
                 player.rect.x=250
                 level+=1
@@ -1007,6 +1009,8 @@ def MPEasy(root,high=-1):
                 mainMenu(highME1=high)
                 gameover=1
             else:
+                bullets1=[]
+                bullets2=[]
                 ammo=[]
                 player1.rect.x=225
                 player2.rect.x=275
@@ -1143,7 +1147,7 @@ def MPHard(root,high=-1):
                             bullet=Bullet(DISPLAYSURF,player1.rect.x+25,player1.rect.y)
                             bullets1.append(bullet)
                         elif player1.powerUp==False:
-                            if bullets==[]:
+                            if bullets1==[]:
                                 bullet=Bullet(DISPLAYSURF,player1.rect.x+25,player1.rect.y)
                                 bullets1.append(bullet)
             elif event.type==pygame.KEYDOWN and event.key==pygame.K_w:
@@ -1154,7 +1158,7 @@ def MPHard(root,high=-1):
                             bullet=Bullet(DISPLAYSURF,player2.rect.x+25,player2.rect.y)
                             bullets2.append(bullet)
                         elif player2.powerUp==False:
-                            if bullets==[]:
+                            if bullets2==[]:
                                 bullet=Bullet(DISPLAYSURF,player2.rect.x+25,player2.rect.y)
                                 bullets2.append(bullet)
             #pause event
@@ -1326,6 +1330,8 @@ def MPHard(root,high=-1):
                 mainMenu(highMH1=high)
                 gameover=1
             else:
+                bullets1=[]
+                bullets2=[]
                 ammo=[]
                 player1.rect.x=225
                 player2.rect.x=275
